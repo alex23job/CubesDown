@@ -27,7 +27,7 @@ public class SpawnCubes : MonoBehaviour
         }
     }
 
-    public void SpawnNewCubes(int count, float speed = 1f)
+    public void SpawnNewCubes(int count, float speed = 1f, bool isTwoColors = false)
     {
         if (parent != null) DelParent();
         speedParent = speed;
@@ -42,7 +42,14 @@ public class SpawnCubes : MonoBehaviour
             cube.transform.localPosition = new Vector3(0, 0, i * 1.1f);
             int numMat1 = Random.Range(0, arrMaters.Length);
             int numMat2 = Random.Range(0, arrMaters.Length);
-            cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
+            if (isTwoColors)
+            {
+                cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
+            }
+            else
+            {
+                cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat1], numMat1, numMat1);
+            }
             Destroy(cube, timeLive - 1);
         }
         Destroy(parent, timeLive);
