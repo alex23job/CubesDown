@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class LevelControl : MonoBehaviour
@@ -27,6 +28,7 @@ public class LevelControl : MonoBehaviour
 
     private List<LevelInfo> listLevels = new List<LevelInfo>();
     private List<Vector3> listPositions = new List<Vector3>();
+    private int[] znCols = new int[9] { -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -44,7 +46,7 @@ public class LevelControl : MonoBehaviour
         else
         {
             timer = 2f;
-            LiveMinus();
+            //LiveMinus();
             spavnLeft++;
             spavnRight++;
             if (spavnLeft == 4)
@@ -129,11 +131,11 @@ public class LevelControl : MonoBehaviour
 
         if (spavnLeft == 0)
         {
-            spLeft.SpawnNewCubes(li.CountDownCubesLeft, 2f + (level - 1) * 0.1f, level > 10);
+            spLeft.SpawnNewCubes(li.CountDownCubesLeft, znCols, 2f + (level - 1) * 0.1f, level > 10);
         }
         if (spavnRight == 0 && li.IsRight)
         {
-            spRight.SpawnNewCubes(li.CountDownCubesRight, 2f + (level - 6) * 0.1f, level > 10);
+            spRight.SpawnNewCubes(li.CountDownCubesRight, znCols, 2f + (level - 6) * 0.1f, level > 10);
         }
     }
 
@@ -144,7 +146,11 @@ public class LevelControl : MonoBehaviour
         {
             for (int i = 0; i < li.CountSelectedCubes; i++) 
             {
-                CubeSelect cs = null;
+                if (znCols[i] == -1)
+                {
+                    GenerateCube(i);
+                }
+                /*CubeSelect cs = null;
                 if (i < cubes.Count) cs = cubes[i].GetComponent<CubeSelect>();
                 if (cs == null)
                 {
@@ -153,7 +159,7 @@ public class LevelControl : MonoBehaviour
                 else if (cs.NumberPosition != i)
                 {
                     GenerateCube(i);
-                }
+                }*/
             }
         }
         if (cubes.Count == 0) 
@@ -171,13 +177,13 @@ public class LevelControl : MonoBehaviour
         int numMat2 = Random.Range(0, arrMaters.Length);
         if (level > 10)
         {
-            cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
+            cc.SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
         }
         else
         {
-            cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat1], numMat1, numMat1);
+            cc.SetColors(arrMaters[numMat1], arrMaters[numMat1], numMat1, numMat1);
         }
-
+        znCols[numPos] = cc.CubeColor;
         cubes.Insert(numPos, cube);
     }
 
@@ -195,22 +201,31 @@ public class LevelControl : MonoBehaviour
 
     public void CubeSelect(GameObject cube)
     {
-        if (cubesLeft != null)
+        //StringBuilder sb = new StringBuilder();
+        int numPos = cube.GetComponent<CubeSelect>().NumberPosition;
+        bool isSelectedOk = false;
+        float cz = cube.transform.position.z, cx = cube.transform.position.x;
+        if (cubesLeft != null && cx < 1f)
         {
-            float cy = cube.transform.position.y;
             for (int i = 0; i < cubesLeft.transform.childCount; i++)
             {
                 GameObject go = cubesLeft.transform.GetChild(i).gameObject;
+                //sb.Append($"<left_{i+1}={go.transform.position}> ");
                 CubeControl cc = go.GetComponent<CubeControl>();
-                if (Mathf.Abs(go.transform.position.y - cy) < 0.4f)
+                if (Mathf.Abs(go.transform.position.z - cz) < 0.4f)
                 {
                     if (cc.CubeColor == cube.GetComponent<CubeControl>().CubeColor)
                     {
+                        isSelectedOk = true;
                         score++;
                         ui_Control.ViewScore(score);
+                        GameObject downEffect = Instantiate(effectPrefab, go.transform.position, Quaternion.identity);
+                        Destroy(downEffect, 0.5f);
+                        Destroy(go);
                         GameObject effect = Instantiate(effectPrefab, cube.transform.position, Quaternion.identity);
-                        Destroy(effect, 0.5f);
-                        cubes.RemoveAt(cube.GetComponent<CubeSelect>().NumberPosition);
+                        Destroy(effect, 0.5f);                        
+                        cubes.RemoveAt(numPos);
+                        znCols[numPos] = -1;
                         Destroy(cube);
                         Invoke("GenerateSelectedCubes", 1f);
 
@@ -219,7 +234,41 @@ public class LevelControl : MonoBehaviour
                 }
             }
         }
-        //print(cube.name);
+        if (cubesRight != null && cx > -1) 
+        {
+            for (int i = 0; i < cubesRight.transform.childCount; i++)
+            {
+                
+                GameObject go = cubesRight.transform.GetChild(i).gameObject;
+                //sb.Append($"<right_{i + 1}={go.transform.position}> ");
+                CubeControl cc = go.GetComponent<CubeControl>();
+                if (Mathf.Abs(go.transform.position.z - cz) < 0.4f)
+                {
+                    if (cc.CubeColor == cube.GetComponent<CubeControl>().CubeColor)
+                    {
+                        isSelectedOk = true;
+                        score++;
+                        ui_Control.ViewScore(score);
+                        GameObject downEffect = Instantiate(effectPrefab, go.transform.position, Quaternion.identity);
+                        Destroy(downEffect, 0.5f);
+                        Destroy(go);
+                        GameObject effect = Instantiate(effectPrefab, cube.transform.position, Quaternion.identity);
+                        Destroy(effect, 0.5f);
+                        cubes.RemoveAt(numPos);
+                        znCols[numPos] = -1;
+                        Destroy(cube);
+                        Invoke("GenerateSelectedCubes", 1f);
+
+                        break;
+                    }
+                }
+            }
+        }
+        if (!isSelectedOk)
+        {   //  Минус одна попытка
+            LiveMinus();
+        }
+        //print(sb.ToString());
     }
 }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnCubes : MonoBehaviour
@@ -27,14 +28,29 @@ public class SpawnCubes : MonoBehaviour
         }
     }
 
-    public void SpawnNewCubes(int count, float speed = 1f, bool isTwoColors = false)
+    public void SpawnNewCubes(int count, int[] arr, float speed = 1f, bool isTwoColors = false)
     {
         if (parent != null) DelParent();
         speedParent = speed;
-
+        List<int> list = new List<int>();
+        int i, countFromArr = 0;
+        for (i = 0; i < arr.Length; i++)
+        {
+            if (arr[i] != -1)
+            {
+                if (isLeft)
+                {
+                    if (i < 4 || i == 6 || i == 7) list.Add(arr[i]);
+                }
+                else
+                {
+                    if (i < 3 || i == 4 || i == 5 || i == 8) list.Add(arr[i]);
+                }
+            }
+        }
         parent = new GameObject("Parent");
         parent.transform.position = transform.position;
-        for (int i = 0; i < count; i++)
+        for (i = 0; i < count; i++)
         {
             GameObject cube = Instantiate(cubePrefab);
             cube.transform.parent = parent.transform;
@@ -42,6 +58,25 @@ public class SpawnCubes : MonoBehaviour
             cube.transform.localPosition = new Vector3(0, 0, i * 1.1f);
             int numMat1 = Random.Range(0, arrMaters.Length);
             int numMat2 = Random.Range(0, arrMaters.Length);
+            int rnd = Random.Range(0, 2);
+            if (rnd == 0 || (rnd == 1 && i > 1))
+            {
+                if (countFromArr < 2 && list.Count > 0)
+                {
+                    if (list[0] > 10)
+                    {
+                        numMat1 = (list[0] / 10) - 1;
+                        numMat2 = (list[0] % 10) - 1;
+                    }
+                    else
+                    {
+                        numMat1 = list[0] - 1;
+                        numMat2 = numMat1;
+                    }
+                    list.RemoveAt(0);
+                    countFromArr++;
+                }
+            }
             if (isTwoColors)
             {
                 cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
