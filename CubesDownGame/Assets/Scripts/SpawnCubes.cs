@@ -40,11 +40,13 @@ public class SpawnCubes : MonoBehaviour
             {
                 if (isLeft)
                 {
-                    if (i < 4 || i == 6 || i == 7) list.Add(arr[i]);
+                    if (i < 6) list.Add(arr[i]);
+                    //if (i < 4 || i == 6 || i == 7) list.Add(arr[i]);
                 }
                 else
                 {
-                    if (i < 3 || i == 4 || i == 5 || i == 8) list.Add(arr[i]);
+                    if (i > 2) list.Add(arr[i]);
+                    //if (i < 3 || i == 4 || i == 5 || i == 8) list.Add(arr[i]);
                 }
             }
         }
