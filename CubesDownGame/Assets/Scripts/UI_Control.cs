@@ -10,11 +10,14 @@ public class UI_Control : MonoBehaviour
     [SerializeField] private GameObject lossPanel;
     [SerializeField] private Text txtResult;
 
+    [SerializeField] private Image imgSch;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         ViewLevel(1);
         ViewScore(0);
+        ViewScherepacha(false);
     }
 
     public void ViewScore(int score)
@@ -46,5 +49,10 @@ public class UI_Control : MonoBehaviour
             txtResult.text = $"Your result :\n Level {level}    Score {result}";
         }
         lossPanel.SetActive(true);
+    }
+
+    public void ViewScherepacha(bool isView)
+    {
+        imgSch.gameObject.SetActive(isView);
     }
 }

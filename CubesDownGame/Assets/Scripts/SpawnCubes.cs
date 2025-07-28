@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class SpawnCubes : MonoBehaviour
 {
+    [SerializeField] private Material[] arrBonusMaters;
     [SerializeField] private Material[] arrMaters;
     [SerializeField] private GameObject cubePrefab;
+    [SerializeField] private GameObject cubeBonusPrefab;
     [SerializeField] private LevelControl levelControl;
     [SerializeField] private bool isLeft = true;
 
@@ -34,6 +36,7 @@ public class SpawnCubes : MonoBehaviour
         speedParent = speed;
         List<int> list = new List<int>();
         int i, countFromArr = 0;
+        bool isBonus = false;
         for (i = 0; i < arr.Length; i++)
         {
             if (arr[i] != -1)
@@ -54,16 +57,13 @@ public class SpawnCubes : MonoBehaviour
         parent.transform.position = transform.position;
         for (i = 0; i < count; i++)
         {
-            GameObject cube = Instantiate(cubePrefab);
-            cube.transform.parent = parent.transform;
-            //float z = (i > 0 ? 0.1f : 0) + i;
-            cube.transform.localPosition = new Vector3(0, 0, i * 1.1f);
+            GameObject cube;
             int numMat1 = Random.Range(0, arrMaters.Length);
             int numMat2 = Random.Range(0, arrMaters.Length);
             int rnd = Random.Range(0, 2);
             if (rnd == 0 || (rnd == 1 && i > 1))
             {
-                if (countFromArr < 2 && list.Count > 0)
+                if (countFromArr < 2 && (list.Count > 0))
                 {
                     if (list[0] > 10)
                     {
@@ -72,20 +72,44 @@ public class SpawnCubes : MonoBehaviour
                     }
                     else
                     {
-                        numMat1 = list[0] - 1;
+                        if ((list[0] > 6) && (list[0] < 10))
+                        {
+                            numMat1 = list[0] - 7;
+                            print($"SpawnBonus   numMat1 = {numMat1}");
+                            isBonus = true;
+                        }
+                        else
+                        {
+                            numMat1 = list[0] - 1;
+                        }
                         numMat2 = numMat1;
                     }
                     list.RemoveAt(0);
                     countFromArr++;
                 }
             }
-            if (isTwoColors)
+            if (isBonus)
             {
-                cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
+                cube = Instantiate(cubeBonusPrefab);
+                cube.transform.parent = parent.transform;
+                cube.transform.localPosition = new Vector3(0, 0, i * 1.1f);
+                cube.GetComponent<CubeControl>().SetColors(arrBonusMaters[numMat1], arrBonusMaters[numMat1], numMat1 + 6, numMat1 + 6, true);
+                isBonus = false;
             }
             else
             {
-                cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat1], numMat1, numMat1);
+                cube = Instantiate(cubePrefab);
+                cube.transform.parent = parent.transform;
+                cube.transform.localPosition = new Vector3(0, 0, i * 1.1f);
+                if (isTwoColors)
+                {
+                    cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
+                }
+                else
+                {
+                    cube.GetComponent<CubeControl>().SetColors(arrMaters[numMat1], arrMaters[numMat1], numMat1, numMat1);
+                }
+
             }
             Destroy(cube, timeLive - 1);
         }

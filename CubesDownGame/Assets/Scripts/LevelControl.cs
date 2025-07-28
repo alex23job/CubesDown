@@ -5,25 +5,32 @@ using UnityEngine;
 
 public class LevelControl : MonoBehaviour
 {
+    [SerializeField] private Material[] arrBonusMaters;
     [SerializeField] private Material[] arrMaters;
     [SerializeField] private GameObject heartPrefab;
     [SerializeField] private GameObject cubeSelPrefab;
+    [SerializeField] private GameObject cubeBonusPrefab;
     [SerializeField] private GameObject effectPrefab;
     [SerializeField] private GameObject heart;
     [SerializeField] private SpawnCubes spLeft;
     [SerializeField] private SpawnCubes spRight;
     [SerializeField] private UI_Control ui_Control;
+    [SerializeField] private int spawnBonus = 20;
+    [SerializeField] private int slowSpeed = 2;
 
     private bool isPause = true;
 
     private float timer = 2f;
     private int countLive = 3;
+    private int countBonus = 0;
     private int spavnLeft = 0;
     private int spavnRight = 0;
 
     private int oldLevel = 1;
     private int level = 1;
     private int score = 0;
+
+    private int slowCount = 0;
 
     private GameObject cubesLeft = null;
     private GameObject cubesRight = null;
@@ -50,6 +57,7 @@ public class LevelControl : MonoBehaviour
         else
         {
             timer = 1.5f;
+            if (slowCount > 0) timer += 2f;
             //LiveMinus();
             spavnLeft++;
             spavnRight++;
@@ -175,14 +183,23 @@ public class LevelControl : MonoBehaviour
             }
         }
         ui_Control.ViewLevel(li.Level);
-
+        int slow = (slowCount > 0) ? slowSpeed : 0;
         if (spavnLeft == 0)
         {
-            spLeft.SpawnNewCubes(li.CountDownCubesLeft, znCols, 3f + (level - 1) * 0.1f, level > 10);
+            if (slowCount > 0)
+            {
+                slowCount--;
+                if (slowCount == 0)
+                {
+                    timer += 4f;
+                    ui_Control.ViewScherepacha(false);
+                }
+            }
+            spLeft.SpawnNewCubes(li.CountDownCubesLeft, znCols, 3f + (level - 1) * 0.1f - slow, level > 10);
         }
         if (spavnRight == 0 && li.IsRight)
         {
-            spRight.SpawnNewCubes(li.CountDownCubesRight, znCols, 3f + (level - 6) * 0.1f, level > 10);
+            spRight.SpawnNewCubes(li.CountDownCubesRight, znCols, 3f + (level - 6) * 0.1f - slow, level > 10);
         }
     }
 
@@ -204,17 +221,6 @@ public class LevelControl : MonoBehaviour
             nums.Remove(nums[numPos]);
             cntOkNums++;
         }
-
-        /*if (cubes.Count < li.CountSelectedCubes)
-        {
-            for (i = 0; i < li.CountSelectedCubes; i++) 
-            {
-                if (znCols[i] == -1)
-                {
-                    GenerateCube(i);
-                }
-            }
-        }*/
         if (cubes.Count == 0) 
         {
             GenerateCube(4);
@@ -223,21 +229,42 @@ public class LevelControl : MonoBehaviour
 
     private void GenerateCube(int numPos)
     {
-        GameObject cube = Instantiate(cubeSelPrefab, listPositions[numPos], Quaternion.identity);
-        cube.GetComponent<CubeSelect>().SetParams(gameObject.GetComponent<LevelControl>(), numPos);
-        CubeControl cc = cube.GetComponent<CubeControl>();
-        int numMat1 = Random.Range(0, arrMaters.Length);
-        int numMat2 = Random.Range(0, arrMaters.Length);
-        if (level > 10)
+        countBonus++;
+        GameObject cube;
+        if (countBonus == spawnBonus)
         {
-            cc.SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
+            cube = Instantiate(cubeBonusPrefab, listPositions[numPos], Quaternion.Euler(0, 0, 180));
         }
         else
         {
-            cc.SetColors(arrMaters[numMat1], arrMaters[numMat1], numMat1, numMat1);
+            cube = Instantiate(cubeSelPrefab, listPositions[numPos], Quaternion.identity);
+        }        
+        cube.GetComponent<CubeSelect>().SetParams(gameObject.GetComponent<LevelControl>(), numPos);
+        CubeControl cc = cube.GetComponent<CubeControl>();
+        if (countBonus == spawnBonus)
+        {
+            int numBonusMat = Random.Range(0, arrBonusMaters.Length);
+            cc.SetColors(arrBonusMaters[numBonusMat], arrBonusMaters[numBonusMat], 6 + numBonusMat, 6 + numBonusMat, true);
+        }
+        else
+        {
+            int numMat1 = Random.Range(0, arrMaters.Length);
+            int numMat2 = Random.Range(0, arrMaters.Length);
+            if (level > 10)
+            {
+                cc.SetColors(arrMaters[numMat1], arrMaters[numMat2], numMat1, numMat2);
+            }
+            else
+            {
+                cc.SetColors(arrMaters[numMat1], arrMaters[numMat1], numMat1, numMat1);
+            }
         }
         znCols[numPos] = cc.CubeColor;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < znCols.Length; i++) sb.Append($"<{znCols[i]}>, ");
+        print(sb.ToString());
         cubes.Add(cube);
+        countBonus %= spawnBonus;
         //cubes.Insert(numPos, cube);
     }
 
@@ -256,6 +283,7 @@ public class LevelControl : MonoBehaviour
     public void CubeSelect(GameObject cube)
     {
         bool isSelectedOk = TestColorComparison(cube);
+        bool isBomb = false;
         if (isSelectedOk)
         {
             List<GameObject> delCubes = new List<GameObject>();
@@ -279,6 +307,9 @@ public class LevelControl : MonoBehaviour
                         {
                             if (cc.CubeColor == cb.GetComponent<CubeControl>().CubeColor)
                             {
+                                if (cc.CubeColor == 7) LivePlus(1);
+                                if (cc.CubeColor == 8) isBomb = true;
+                                if (cc.CubeColor == 9) { slowCount = 3; ui_Control.ViewScherepacha(true); }
                                 delCubes.Add(go);
                                 isOK = true;
                                 break;
@@ -297,6 +328,9 @@ public class LevelControl : MonoBehaviour
                         {
                             if (cc.CubeColor == cb.GetComponent<CubeControl>().CubeColor)
                             {
+                                if (cc.CubeColor == 7) LivePlus(1);
+                                if (cc.CubeColor == 8) isBomb = true;
+                                if (cc.CubeColor == 9) { slowCount = 3; ui_Control.ViewScherepacha(true); }
                                 delCubes.Add(go);
                                 isOK = true;
                                 break;
@@ -306,6 +340,33 @@ public class LevelControl : MonoBehaviour
                 }
                 if (isOK)
                 {
+                    delNumPositions.Add(cb.GetComponent<CubeSelect>().NumberPosition);
+                    if (isBomb) break;
+                }
+            }
+            if (isBomb)
+            { 
+                delCubes.Clear();
+                delNumPositions.Clear();
+                if (cubesLeft != null)
+                {
+                    for (j = 0; j < cubesLeft.transform.childCount; j++)
+                    {
+                        GameObject go = cubesLeft.transform.GetChild(j).gameObject;
+                        delCubes.Add(go);
+                    }
+                }
+                if (cubesRight != null)
+                {
+                    for (j = 0; j < cubesRight.transform.childCount; j++)
+                    {
+                        GameObject go = cubesRight.transform.GetChild(j).gameObject;
+                        delCubes.Add(go);
+                    }
+                }
+                for (i = 0; i < cubes.Count; i++)
+                {
+                    GameObject cb = cubes[i];
                     delNumPositions.Add(cb.GetComponent<CubeSelect>().NumberPosition);
                 }
             }
