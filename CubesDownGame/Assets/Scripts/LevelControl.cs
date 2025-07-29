@@ -97,10 +97,20 @@ public class LevelControl : MonoBehaviour
         listLevels.Add(new LevelInfo(14, 450, 6, 7, 6, true));
         listLevels.Add(new LevelInfo(15, 450, 6, 7, 7, true));
         listLevels.Add(new LevelInfo(16, 500, 7, 7, 7, true));
-        listLevels.Add(new LevelInfo(17, 550, 8, 7, 7, true));
-        listLevels.Add(new LevelInfo(18, 600, 8, 8, 7, true));
-        listLevels.Add(new LevelInfo(19, 700, 8, 8, 8, true));
-        listLevels.Add(new LevelInfo(20, 800, 9, 8, 8, true));
+        listLevels.Add(new LevelInfo(17, 550, 7, 7, 7, true));
+        listLevels.Add(new LevelInfo(18, 600, 8, 7, 7, true));
+        listLevels.Add(new LevelInfo(19, 700, 8, 8, 7, true));
+        listLevels.Add(new LevelInfo(20, 800, 8, 8, 8, true));
+        listLevels.Add(new LevelInfo(21, 900, 9, 8, 8, true));
+        listLevels.Add(new LevelInfo(22, 1000, 9, 9, 8, true));
+        listLevels.Add(new LevelInfo(23, 1100, 9, 9, 8, true));
+        listLevels.Add(new LevelInfo(24, 1200, 9, 9, 9, true));
+        listLevels.Add(new LevelInfo(25, 1300, 9, 9, 9, true));
+        listLevels.Add(new LevelInfo(26, 1400, 9, 9, 9, true));
+        listLevels.Add(new LevelInfo(27, 1500, 9, 9, 9, true));
+        listLevels.Add(new LevelInfo(28, 1600, 9, 9, 9, true));
+        listLevels.Add(new LevelInfo(29, 1700, 9, 9, 9, true));
+        listLevels.Add(new LevelInfo(30, 1800, 9, 9, 9, true));
     }
 
     private void CreatePositions()
@@ -138,6 +148,7 @@ public class LevelControl : MonoBehaviour
     public void LivePlus(int cnt)
     {
         countLive += cnt;
+        if (countLive > 7) countLive = 7;
         heart.SetActive(true);
         ui_Control.ViewLive(countLive);
     }
@@ -255,7 +266,13 @@ public class LevelControl : MonoBehaviour
         CubeControl cc = cube.GetComponent<CubeControl>();
         if (countBonus == spawnBonus)
         {
-            int numBonusMat = Random.Range(0, arrBonusMaters.Length);
+            //int numBonusMat = Random.Range(0, arrBonusMaters.Length);
+            int numBonusMat = Random.Range(0, 20);
+            if (numBonusMat > 0) 
+            {
+                if (numBonusMat < 14) numBonusMat = 1;
+                else numBonusMat = 2;
+            }
             cc.SetColors(arrBonusMaters[numBonusMat], arrBonusMaters[numBonusMat], 6 + numBonusMat, 6 + numBonusMat, true);
         }
         else
@@ -317,7 +334,8 @@ public class LevelControl : MonoBehaviour
                         CubeControl cc = go.GetComponent<CubeControl>();
                         if (Mathf.Abs(go.transform.position.z - cz) < 0.5f)
                         {
-                            if (cc.CubeColor == cb.GetComponent<CubeControl>().CubeColor)
+                            //if (cc.CubeColor == cb.GetComponent<CubeControl>().CubeColor)
+                            if (cc.CmpColor(cb.GetComponent<CubeControl>().CubeColor))
                             {
                                 if (cc.CubeColor == 7) LivePlus(1);
                                 if (cc.CubeColor == 8) isBomb = true;
@@ -338,7 +356,8 @@ public class LevelControl : MonoBehaviour
                         CubeControl cc = go.GetComponent<CubeControl>();
                         if (Mathf.Abs(go.transform.position.z - cz) < 0.5f)
                         {
-                            if (cc.CubeColor == cb.GetComponent<CubeControl>().CubeColor)
+                            //if (cc.CubeColor == cb.GetComponent<CubeControl>().CubeColor)
+                            if (cc.CmpColor(cb.GetComponent<CubeControl>().CubeColor))
                             {
                                 if (cc.CubeColor == 7) LivePlus(1);
                                 if (cc.CubeColor == 8) isBomb = true;
@@ -406,7 +425,8 @@ public class LevelControl : MonoBehaviour
                 CubeControl cc = go.GetComponent<CubeControl>();
                 if (Mathf.Abs(go.transform.position.z - cz) < 0.5f)
                 {
-                    if (cc.CubeColor == cube.GetComponent<CubeControl>().CubeColor)
+                    //if (cc.CubeColor == cube.GetComponent<CubeControl>().CubeColor)
+                    if (cc.CmpColor(cube.GetComponent<CubeControl>().CubeColor))
                     {
                         isSelectedOk = true;
                         break;
@@ -422,7 +442,8 @@ public class LevelControl : MonoBehaviour
                 CubeControl cc = go.GetComponent<CubeControl>();
                 if (Mathf.Abs(go.transform.position.z - cz) < 0.5f)
                 {
-                    if (cc.CubeColor == cube.GetComponent<CubeControl>().CubeColor)
+                    //if (cc.CubeColor == cube.GetComponent<CubeControl>().CubeColor)
+                    if (cc.CmpColor(cube.GetComponent<CubeControl>().CubeColor))
                     {
                         isSelectedOk = true;
                         break;

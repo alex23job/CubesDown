@@ -11,6 +11,7 @@ public class MenuControl : MonoBehaviour
     [SerializeField] private Text txtName;
     [SerializeField] private Text txtRecord;
 
+    [SerializeField] private Image imgFone;
     [SerializeField] private Image imgProgress;
     [SerializeField] private Button btnPlay;
 
@@ -47,6 +48,8 @@ public class MenuControl : MonoBehaviour
     {
         isLoad = true;
         btnPlay.interactable = true;
+        imgFone.gameObject.SetActive(false);
+        imgProgress.gameObject.SetActive(false);
     }
 
     public void ViewAvatar()

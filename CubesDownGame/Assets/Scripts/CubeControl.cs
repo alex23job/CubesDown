@@ -38,4 +38,18 @@ public class CubeControl : MonoBehaviour
         }
         mr.materials = mats;
     }
+
+    public bool CmpColor(int color)
+    {
+        if (CubeColor == color) 
+        {
+            return true;
+        }
+        if (CubeColor > 10)
+        {
+            int invColor = 10 * numColor2 + numColor1;
+            if (invColor == color) return true;
+        }
+        return false;
+    }
 }
