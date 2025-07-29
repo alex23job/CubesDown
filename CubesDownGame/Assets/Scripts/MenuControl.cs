@@ -2,10 +2,14 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Runtime.InteropServices;
 
 public class MenuControl : MonoBehaviour
 {
-//    [SerializeField] private Text[] arTxtRecItems;
+    [DllImport("__Internal")]
+    private static extern void GetLeaderboardEntries();
+
+    //    [SerializeField] private Text[] arTxtRecItems;
     [SerializeField] private GameObject[] arRecItems;
     [SerializeField] private RawImage riAvatar;
     [SerializeField] private Text txtName;
@@ -23,7 +27,9 @@ public class MenuControl : MonoBehaviour
     {
         txtName.text = "-----";
         txtRecord.text = "-----   -----";
+        ViewRecord();
         ViewLeaderboard("");
+        Invoke("GetLeaderboard", 0.02f);
         btnPlay.interactable = false;
     }
 
@@ -58,6 +64,12 @@ public class MenuControl : MonoBehaviour
         riAvatar.texture = GameManager.Instance.currentPlayer.photo;
         Debug.Log($"ViewAvatar => name={GameManager.Instance.currentPlayer.playerName}");
         ViewRecord();
+    }
+    public void GetLeaderboard()
+    {
+#if UNITY_WEBGL
+        GetLeaderboardEntries();
+#endif
     }
 
     public void ViewRecord()

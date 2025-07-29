@@ -76,6 +76,8 @@ public class LevelControl : MonoBehaviour
     public void SetPause(bool pause)
     {
         isPause = pause;
+        ui_Control.ViewLevel(level);
+        ui_Control.ViewScore(score);
     }
 
     private void CreateLevels()
@@ -456,7 +458,7 @@ public class LevelControl : MonoBehaviour
 
     private void DeletingCubes(List<GameObject> listCubes, List<int> listNumbers) 
     {
-        print($"paramCubes={listCubes.Count} numbers={listNumbers.Count}");
+        //print($"paramCubes={listCubes.Count} numbers={listNumbers.Count}");
         int i;
         score += listNumbers.Count;
         if (listNumbers.Count > 1) score += listNumbers.Count - 1;

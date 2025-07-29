@@ -75,7 +75,7 @@ public class SpawnCubes : MonoBehaviour
                         if ((list[0] > 6) && (list[0] < 10))
                         {
                             numMat1 = list[0] - 7;
-                            print($"SpawnBonus   numMat1 = {numMat1}");
+                            //print($"SpawnBonus   numMat1 = {numMat1}");
                             isBonus = true;
                         }
                         else

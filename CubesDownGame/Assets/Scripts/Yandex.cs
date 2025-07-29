@@ -73,7 +73,7 @@ public class Yandex : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Invoke("TestProgressBar", 10f);
+        //Invoke("TestProgressBar", 10f);
     }
 
     private void TestProgressBar()
@@ -108,9 +108,9 @@ public class Yandex : MonoBehaviour
         //soundFone.Pause();
         //btnShowAdw.gameObject.SetActive(false);
 
-        AddRewardBonus(3);
+        //AddRewardBonus(3);
         
-        //AddBonusExtern(1);
+        AddBonusExtern(1);
         GameStop();
     }
 

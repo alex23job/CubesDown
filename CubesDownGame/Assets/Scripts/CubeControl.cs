@@ -28,8 +28,6 @@ public class CubeControl : MonoBehaviour
         if (isBonus)
         {
             mats[0] = mat1;
-            //numColor1 += 6;
-            //numColor2 = numColor1;
         }
         else
         {

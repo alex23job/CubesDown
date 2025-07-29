@@ -59,18 +59,20 @@ mergeInto(LibraryManager.library, {
 	},
 
 	SetToLeaderboard: function (score) {
-		ysdk.getLeaderboards()
-		  .then(lb => {
+		ysdk.leaderboards.setScore('Score', score);
+		//ysdk.getLeaderboards()
+		//  .then(lb => {
 		    // Без extraData
-		    lb.setLeaderboardScore('Score', score);
+		//    lb.setLeaderboardScore('Score', score);
 		    // С extraData
 		    //lb.setLeaderboardScore('leaderboard2021', 120, 'My favourite player!');
-		  });
+		//  });
 	},
 
 	GetLeaderboardEntries: function () {
 		// Получение 10 топов и по 1 записи вокруг пользователя
-    		lb.getLeaderboardEntries('Score', { quantityTop: 10, includeUser: true, quantityAround: 1 })
+    		//lb.getLeaderboardEntries('Score', { quantityTop: 10, includeUser: true, quantityAround: 1 })
+		ysdk.leaderboards.getEntries('Score', { quantityTop: 10, includeUser: true, quantityAround: 1 })
       		.then(res => {
 			console.log(res);
 			var items = res.entries.map((entry) => {

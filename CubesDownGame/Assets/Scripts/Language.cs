@@ -9,6 +9,7 @@ public class Language : MonoBehaviour
     private static extern string GetLang();
 
     public string CurrentLanguage = "ru";  //  ru en
+    //public string CurrentLanguage = "en";  //  ru en
 
     public static Language Instance;
 
@@ -18,7 +19,7 @@ public class Language : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            Invoke("LoadLanguage", 0.1f);
+            Invoke("LoadLanguage", 0.02f);
         }
         else
         {
