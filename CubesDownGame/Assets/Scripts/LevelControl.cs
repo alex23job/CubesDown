@@ -130,6 +130,7 @@ public class LevelControl : MonoBehaviour
         {
             ui_Control.ViewLossPanel(level, score);
             heart.SetActive(false);
+            SaveProgress();
         }
         ui_Control.ViewLive(countLive);
     }
@@ -165,6 +166,16 @@ public class LevelControl : MonoBehaviour
         GenerateSelectedCubes();
     }
 
+    private void SaveProgress()
+    {
+        if (score > GameManager.Instance.currentPlayer.totalScore)
+        {
+            GameManager.Instance.currentPlayer.totalScore = score;
+            GameManager.Instance.currentPlayer.maxLevel = level;
+            GameManager.Instance.SaveGame();
+        }        
+    }
+
     private void SpawnCubes()
     {
         LevelInfo li = listLevels[0];
@@ -178,6 +189,7 @@ public class LevelControl : MonoBehaviour
                 {
                     oldLevel = level;
                     LivePlus(1);
+                    SaveProgress();
                 }
                 break;
             }
@@ -260,9 +272,9 @@ public class LevelControl : MonoBehaviour
             }
         }
         znCols[numPos] = cc.CubeColor;
-        StringBuilder sb = new StringBuilder();
+        /*StringBuilder sb = new StringBuilder();
         for (int i = 0; i < znCols.Length; i++) sb.Append($"<{znCols[i]}>, ");
-        print(sb.ToString());
+        print(sb.ToString());*/
         cubes.Add(cube);
         countBonus %= spawnBonus;
         //cubes.Insert(numPos, cube);
@@ -453,6 +465,7 @@ public class LevelControl : MonoBehaviour
                 }                
             }
         }
+        SaveProgress();
         ui_Control.ViewScore(score);
     }
 }

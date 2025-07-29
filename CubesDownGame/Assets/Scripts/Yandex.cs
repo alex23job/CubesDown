@@ -73,7 +73,12 @@ public class Yandex : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Invoke("TestProgressBar", 10f);
+    }
 
+    private void TestProgressBar()
+    {
+        if (startMenu != null) startMenu.LoadComplete();
     }
 
     public void ClickRateButton()
@@ -102,9 +107,10 @@ public class Yandex : MonoBehaviour
         }
         //soundFone.Pause();
         //btnShowAdw.gameObject.SetActive(false);
+
         AddRewardBonus(3);
         
-        AddBonusExtern(1);
+        //AddBonusExtern(1);
         GameStop();
     }
 
@@ -167,6 +173,7 @@ public class Yandex : MonoBehaviour
         if (startMenu != null)
         {
             startMenu.ViewAvatar();
+            if (startMenu != null) startMenu.LoadComplete();
         }
         /*if (txtName != null)
         {
@@ -200,7 +207,11 @@ public class Yandex : MonoBehaviour
     public void TranslateLiderboardEntries(string strJson)
     {
         Debug.Log($"TranslateLiderboardEntries isReady = {isReady}");
-        if (isReady) GamePlayReady(); 
+        if (isReady)
+        {
+            GamePlayReady();
+            if (startMenu != null) startMenu.LoadComplete();
+        }
         else isReady = true;
         if (startMenu != null) startMenu.ViewLeaderboard(strJson);
     }
@@ -243,7 +254,10 @@ public class Yandex : MonoBehaviour
     public void SetPlayerInfo(string jsonStr)
     {
         Debug.Log($"SetPlayerInfo isReady = {isReady}");
-        if (isReady) GamePlayReady();
+        if (isReady)
+        {
+            GamePlayReady();
+        }
         else isReady = true;
 
         //Debug.Log($"PlayerInfoJsonString => {jsonStr}");

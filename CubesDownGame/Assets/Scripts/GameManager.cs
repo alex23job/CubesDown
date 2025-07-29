@@ -74,6 +74,7 @@ public class GameManager : MonoBehaviour
             GameManager.Instance.currentPlayer = PlayerInfo.FirstGame();
             if (mm_control != null)
             {
+                mm_control.ViewRecord();
                 //mm_control.OnPoleSelect(GameManager.Instance.currentPlayer.currentPole);
                 //mm_control.OnModeSelect(GameManager.Instance.currentPlayer.currentMode);
                 //mm_control.ViewScore();
@@ -102,8 +103,7 @@ public class GameManager : MonoBehaviour
 
         if (mm_control != null)
         {
-            //mm_control.OnPoleSelect(GameManager.Instance.currentPlayer.currentPole);
-            //mm_control.OnModeSelect(GameManager.Instance.currentPlayer.currentMode);
+            mm_control.ViewRecord();
             //mm_control.ViewScore();
             //mm_control.UpdateSound();
             //mm_control.ViewScore();
@@ -119,6 +119,7 @@ public class GameManager : MonoBehaviour
         SaveData data = new SaveData();
 
         data.score = GameManager.Instance.currentPlayer.totalScore;
+        data.level = GameManager.Instance.currentPlayer.maxLevel;
 
         data.isHints = GameManager.Instance.currentPlayer.isHintView;
         data.isFone = GameManager.Instance.currentPlayer.isSoundFone;
@@ -229,7 +230,7 @@ public class PlayerInfo
 public class SaveData
 {
     public int score;
-    public int level;
+    public int level = 1;
 
     public bool isFone;
     public bool isEffects;

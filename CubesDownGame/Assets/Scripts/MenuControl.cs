@@ -11,19 +11,44 @@ public class MenuControl : MonoBehaviour
     [SerializeField] private Text txtName;
     [SerializeField] private Text txtRecord;
 
+    [SerializeField] private Image imgProgress;
+    [SerializeField] private Button btnPlay;
+
+    private float timer = 5f;
+    private bool isLoad = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         txtName.text = "-----";
         txtRecord.text = "-----   -----";
         ViewLeaderboard("");
+        btnPlay.interactable = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (isLoad == false)
+        {
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+                imgProgress.fillAmount = (5f - timer) / 5f;
+            }
+            else 
+            {
+                timer = 5f;
+            }
+        }
     }
+
+    public void LoadComplete()
+    {
+        isLoad = true;
+        btnPlay.interactable = true;
+    }
+
     public void ViewAvatar()
     {
         txtName.text = GameManager.Instance.currentPlayer.playerName;
@@ -32,15 +57,17 @@ public class MenuControl : MonoBehaviour
         ViewRecord();
     }
 
-    private void ViewRecord()
+    public void ViewRecord()
     {
+        int level = GameManager.Instance.currentPlayer.maxLevel;
+        if ( level == 0 ) level = 1;
         if (Language.Instance.CurrentLanguage == "ru")
         {
-            txtRecord.text = $"Óð.{GameManager.Instance.currentPlayer.maxLevel} Î÷:{GameManager.Instance.currentPlayer.totalScore}";
+            txtRecord.text = $"Óð.{level} Î÷:{GameManager.Instance.currentPlayer.totalScore}";
         }
         else
         {
-            txtRecord.text = $"Lv.{GameManager.Instance.currentPlayer.maxLevel} Sc:{GameManager.Instance.currentPlayer.totalScore}";
+            txtRecord.text = $"Lv.{level} Sc:{GameManager.Instance.currentPlayer.totalScore}";
         }
     }
 
