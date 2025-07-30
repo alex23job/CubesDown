@@ -61,11 +61,11 @@ public class LevelControl : MonoBehaviour
             //LiveMinus();
             spavnLeft++;
             spavnRight++;
-            if (spavnLeft == 3)
+            if (spavnLeft >= 3)
             {
                 spavnLeft = 0;                
             }
-            if (spavnRight == 3)
+            if (spavnRight >= 3)
             {
                 spavnRight = 0;
             }
@@ -78,6 +78,12 @@ public class LevelControl : MonoBehaviour
         isPause = pause;
         ui_Control.ViewLevel(level);
         ui_Control.ViewScore(score);
+        if (isPause == false)
+        {
+            spavnLeft = 0;
+            spavnRight = 0;
+            SpawnCubes();
+        }
     }
 
     private void CreateLevels()
