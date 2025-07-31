@@ -174,13 +174,22 @@ public class LevelControl : MonoBehaviour
         ui_Control.ViewLive(countLive);
         heart.SetActive(true);
 
-        foreach(GameObject cube in cubes)
+        for (int i = cubes.Count; i > 0; i--)
         {
+            GameObject cube = cubes[i - 1];
             GameObject effect = Instantiate(effectPrefab, cube.transform.position, Quaternion.identity);
             Destroy(effect, 0.5f);
             cubes.Remove(cube);
             Destroy(cube);
         }
+
+        /*foreach(GameObject cube in cubes)
+        {
+            GameObject effect = Instantiate(effectPrefab, cube.transform.position, Quaternion.identity);
+            Destroy(effect, 0.5f);
+            cubes.Remove(cube);
+            Destroy(cube);
+        }*/
         for (int i = 0; i < 9; i++) znCols[i] = -1;
         GenerateSelectedCubes();
     }
